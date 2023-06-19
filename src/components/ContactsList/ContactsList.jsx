@@ -1,8 +1,15 @@
 import { useSelector, useDispatch } from 'react-redux';
 import * as contactsAPI from 'redux/contactOperations';
 import {
+  useGetAllContactsQuery,
+  useDeleteContactByIdMutation,
+} from 'redux/contactsApi';
+import { selectFilter } from 'redux/selectors';
+
+
+
+import {
   selectAuth,
-  selectVisibleContacts,
 } from 'redux/selectors';
 
 import {
@@ -15,8 +22,26 @@ import { Button } from '../common.styled';
 
 const ContactsList = () => {
   const { isLoggedIn } = useSelector(selectAuth);
-  const visibleContacts = useSelector(selectVisibleContacts);
   const dispatch = useDispatch();
+  const filter = useSelector(selectFilter);
+
+  const { data: visibleContacts } = useGetAllContactsQuery(
+    undefined,
+    {
+      selectFromResult: ({ data, isFetching }) => ({
+        data: data?.filter(
+          contact =>
+            contact.name.toLowerCase().includes(filter.trim().toLowerCase()) &&
+            (!contact.isPrivate || isLoggedIn)
+        ) ?? [],
+        isFetching,
+      }),
+    }
+  );
+
+  const mutation = useDeleteContactByIdMutation();
+  console.log(mutation);
+
 
   return visibleContacts.length === 0 ? (
     <p>Nothing to show</p>
@@ -35,9 +60,12 @@ const ContactsList = () => {
             {isLoggedIn && (
               <Button
                 type="button"
-                onClick={() => dispatch(contactsAPI.deleteContactById(id))}
+                onClick={
+                  () => mutation(id)
+                  // dispatch(contactsAPI.deleteContactById(id))
+                }
               >
-                 Delete
+                Delete
               </Button>
             )}
           </li>

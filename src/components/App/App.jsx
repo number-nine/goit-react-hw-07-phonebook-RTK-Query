@@ -7,17 +7,21 @@ import SharedLayout from 'components/SharedLayout';
 import Home from 'pages/Home';
 import Dashboard from 'pages/Dashboard';
 import * as contactsAPI from 'redux/contactOperations';
-import { selectAuth, selectIsLoading, selectError } from 'redux/selectors';
+import { useGetAllContactsQuery } from 'redux/contactsApi';
+import { selectAuth } from 'redux/selectors';
 import SplashScreen from 'components/SplashScreen';
 
 
 
 export default function App() {
   const dispatch = useDispatch();
+  const { isLoggedIn, error } = useSelector(selectAuth);
+  // const isLoading = useSelector(selectIsLoading);
+  // const error = useSelector(selectError);
 
-  const { isLoggedIn } = useSelector(selectAuth);
-  const isLoading = useSelector(selectIsLoading);
-  const error = useSelector(selectError);
+  const { isFetching } = useGetAllContactsQuery();
+  // console.log('data ', data);
+  // console.log(isFetching);
 
 
    useEffect(() => {
@@ -36,7 +40,7 @@ export default function App() {
         </Route>
         <Route path="*" element={<div>Not Found</div>} />
       </Routes>
-      {isLoading && <SplashScreen />}
+      {isFetching && <SplashScreen />}
       {error && Notify.info(error)}
     </>
   );
