@@ -10,8 +10,8 @@ import { selectAuth } from 'redux/selectors';
 import SplashScreen from 'components/SplashScreen';
 
 export default function App() {
-  const { isLoggedIn, error } = useSelector(selectAuth);
-  const { isFetching } = useGetAllContactsQuery();
+  const { isLoggedIn } = useSelector(selectAuth);
+  const { isFetching, isError } = useGetAllContactsQuery();
 
   return (
     <>
@@ -26,7 +26,7 @@ export default function App() {
         <Route path="*" element={<div>Not Found</div>} />
       </Routes>
       {isFetching && <SplashScreen />}
-      {error && Notify.info(error)}
+      {isError && Notify.info('Try again later')}
     </>
   );
 }
