@@ -1,7 +1,6 @@
-import { useDispatch } from 'react-redux';
+import { useAddContactMutation } from 'redux/contactsApi';
 import { useFormik } from 'formik';
 
-import * as contactsAPI from 'redux/contactOperations';
 
 import {
   FormStyled,
@@ -40,7 +39,7 @@ const validate = values => {
 };
 
 const ContactEditor = () => {
-  const dispatch = useDispatch();
+  const [addContact, { isLoading }] = useAddContactMutation();
 
   const formik = useFormik({
     initialValues: {
@@ -52,7 +51,7 @@ const ContactEditor = () => {
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: (values, { resetForm }) => {
-      dispatch(contactsAPI.addContact(values));
+      addContact(values);
       resetForm();
     },
   });
@@ -94,7 +93,7 @@ const ContactEditor = () => {
           checked={formik.values.isPrivate}
         />
       </LabelStyledChk>
-      <Button type="submit">Add contact</Button>
+      <Button type="submit" disabled={isLoading}>Add contact</Button>
     </FormStyled>
   );
 };
